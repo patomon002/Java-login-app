@@ -8,7 +8,7 @@ terraform {
     }
   }
 }
-
+ 
 provider "aws" {
   # Configuration options
   region = "us-east-1"
@@ -88,8 +88,8 @@ resource "aws_security_group" "vpc" {
    }
 
     ingress {
-    from_port        = 443
-    to_port          = 443
+    from_port        = 8080
+    to_port          = 8080
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"] 
     
@@ -126,9 +126,6 @@ resource "aws_eip" "one" {
   depends_on                = [aws_internet_gateway.custom_gw]
   associate_with_private_ip = "10.0.1.57"
 }
-
-
-
 
 
 
@@ -182,13 +179,13 @@ tags = {
   name = "Linux"
 }
 
-  user_data = <<-EOF
-              #!/bin/bash
-              apt install -y apache2
-              systemctl start apache2
-              systemctl enable apache2
-              useradd -m Test
-              EOF
+  # user_data = <<-EOF
+  #             #!/bin/bash
+  #             apt install -y apache2
+  #             systemctl start apache2
+  #             systemctl enable apache2
+  #             useradd -m Test
+  #             EOF
               
 }
 
