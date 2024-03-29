@@ -1,16 +1,16 @@
-terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-      version = "5.39.0"
-    }
-  }
-}
+# terraform {
+#   required_providers {
+#     aws = {
+#       source = "hashicorp/aws"
+#       version = "5.39.0"
+#     }
+#   }
+# }
  
-provider "aws" {
-  # Configuration options
-  region = "us-east-1"
-}
+# provider "aws" {
+#   # Configuration options
+#   region = "us-east-1"
+# }
 
 
  #Metrics for memory and disk utilization
@@ -41,9 +41,22 @@ provider "aws" {
 
 #create IAM role
 
+
+data "aws_iam_policy_document" "instance_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
 resource "aws_iam_role" "ec2_role" {
   name = "ec2_role"
-  assume_role_policy = "${file("ec2_role.json")}"
+  path = "/"
+  assume_role_policy = data.aws_iam_policy_document.instance_assume_role_policy.json
 }
 
 
@@ -53,11 +66,13 @@ resource "aws_iam_role_policy" "CW_policy" {
   policy = "${file("cloudwatch.json")}"
 
 }
+resource "aws_iam_role_policy" "SSM_policy" {
+  name = "SSM_policy"
+  role = "${aws_iam_role.ec2_role.id}"
+  policy = "${file("SSM.json")}"
 
-resource "aws_iam_role_policy_attachment" "CW_attachment" {
-  role       = "${aws_iam_role.ec2_role.id}"
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
 }
+
 
 resource "aws_iam_instance_profile" "EC2_profile" {
   name = "EC2_profile"
