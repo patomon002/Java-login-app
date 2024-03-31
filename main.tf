@@ -160,11 +160,11 @@ resource "aws_network_interface" "main" {
 }
 
 resource "aws_instance" "linux" {
-  ami           = "ami-07d9b9ddc6cd8dd30"
+  ami           = "ami-080e1f13689e07408"
   instance_type = "t2.micro"
   key_name = "deployer-key"
   iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
-  
+  user_data = "${file("install.sh")}" 
 
   network_interface {
     network_interface_id = aws_network_interface.main.id
@@ -180,6 +180,8 @@ tags = {
   name = "Linux"
 }
 
+
+
   # user_data = <<-EOF
   #             #!/bin/bash
   #             apt install -y apache2
@@ -192,4 +194,10 @@ tags = {
 
 
 
+resource "aws_ssm_parameter" "secret" {
+  name        = "/production/database/password/master"
+  description = "Custom Metrics"
+  type        = "String"
+  value       = "${file("SSM_Parameter.json")}"
 
+}
