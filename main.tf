@@ -177,25 +177,15 @@ resource "aws_instance" "linux" {
 
 tags = {
 
-  name = "Linux"
+  Name = "Linux"
 }
-
-
-
-  # user_data = <<-EOF
-  #             #!/bin/bash
-  #             apt install -y apache2
-  #             systemctl start apache2
-  #             systemctl enable apache2
-  #             useradd -m Test
-  #             EOF
               
 }
 
 
 
 resource "aws_ssm_parameter" "secret" {
-  name        = "/production/database/password/master"
+  name        = "/alarm/AWS-CWAgentLinConfig"
   description = "Custom Metrics"
   type        = "String"
   value       = "${file("SSM_Parameter.json")}"
