@@ -16,6 +16,16 @@ apt get-update && apt install -y collectd
 
 
 
+sudo apt-cache search maven
+
+sudo apt-get install -y maven
+
+
+
+
+
+
+
 
 
 

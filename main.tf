@@ -17,6 +17,7 @@ provider "aws" {
 
 resource "aws_vpc" "custom_vpc" {
   cidr_block = "10.0.0.0/16"
+  enable_dns_hostnames = "true"
   tags = {
     name = "main"
   }
@@ -159,6 +160,7 @@ resource "aws_network_interface" "main" {
   }
 }
 
+#AWS EC2 Instance with user data and instance profile which attaches the IAM role
 resource "aws_instance" "linux" {
   ami           = "ami-080e1f13689e07408"
   instance_type = "t2.micro"
@@ -171,18 +173,14 @@ resource "aws_instance" "linux" {
     device_index         = 0
   }
 
-  credit_specification {
-    cpu_credits = "unlimited"
-  }
-
 tags = {
 
-  Name = "Linux"
+  Name = "Maven_Git"
 }
               
 }
 
-
+# Systems manager parameter creation -- This will store the custom metrics configuration
 
 resource "aws_ssm_parameter" "secret" {
   name        = "/alarm/AWS-CWAgentLinConfig"
