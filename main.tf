@@ -20,7 +20,7 @@ resource "aws_vpc" "bastion_vpc" {
   cidr_block = "10.0.0.0/16"
   enable_dns_hostnames = "true"
   tags = {
-    name = "Bastion"
+    Name = "Bastion"
   }
      
 }
@@ -29,11 +29,12 @@ resource "aws_vpc" "main_vpc" {
   cidr_block = "10.1.0.0/16"
   enable_dns_hostnames = "true"
   tags = {
-    name = "main"
+    Name = "main"
   }  
      
 }
 
+#Internet Gateways
 
 resource "aws_internet_gateway" "bastion_gw" {
   vpc_id = aws_vpc.bastion_vpc.id
@@ -51,10 +52,11 @@ resource "aws_internet_gateway" "main_gw" {
   }
 }
 
+#NAT Gateway
 
 resource "aws_nat_gateway" "main_nat_gw" {
-  subnet_id     = aws_subnet.main_public_subnet.id
-
+  subnet_id     = aws_subnet.main_public_subnet1.id
+  allocation_id = aws_eip.main.id
   tags = {
     Name = "gw NAT"
   }
@@ -64,7 +66,7 @@ resource "aws_nat_gateway" "main_nat_gw" {
 }
 
 
-  
+#Route Tables 
 
 resource "aws_route_table" "Bastion_vpc" {
   vpc_id = aws_vpc.bastion_vpc.id
@@ -75,69 +77,137 @@ resource "aws_route_table" "Bastion_vpc" {
   }
 
   tags = {
-    Name = "Bastion"
+    Name = "Bastion route stable"
   }
 }
 
-resource "aws_route_table" "main_vpc" {
+resource "aws_route_table" "public_subnet" {
   vpc_id = aws_vpc.main_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.bastion_gw.id
+    gateway_id = aws_internet_gateway.main_gw.id
   }
 
   tags = {
-    Name = "Main"
+    Name = "main_vpc_public_subnet"
   }
 }
+
+resource "aws_route_table" "private_subnet" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.main_nat_gw.id
+  }
+
+  tags = {
+    Name = "main_vpc_private_subnet"
+  }
+}
+
+#Route Table Association
+
+resource "aws_route_table_association" "bastion" {
+  subnet_id      = aws_subnet.bastion_public_subnet.id
+  route_table_id = aws_route_table.Bastion_vpc.id
+}
+
+resource "aws_route_table_association" "bastion2" {
+  subnet_id      = aws_subnet.bastion_public_subnet2.id
+  route_table_id = aws_route_table.Bastion_vpc.id
+}
+
+resource "aws_route_table_association" "public_subnet1" {
+  subnet_id      = aws_subnet.main_public_subnet1.id
+  route_table_id = aws_route_table.public_subnet.id
+}
+
+resource "aws_route_table_association" "public_subnet2" {
+  subnet_id      = aws_subnet.main_public_subnet2.id
+  route_table_id = aws_route_table.public_subnet.id
+}
+
+resource "aws_route_table_association" "private_subnet1" {
+  subnet_id      = aws_subnet.main_private_subnet1.id
+  route_table_id = aws_route_table.private_subnet.id
+}
+
+resource "aws_route_table_association" "private_subnet2" {
+  subnet_id      = aws_subnet.main_private_subnet2.id
+  route_table_id = aws_route_table.private_subnet.id
+}
+
+
+#Subnets
 
 resource "aws_subnet" "bastion_public_subnet" {
   vpc_id            = aws_vpc.bastion_vpc.id 
   cidr_block        = "10.0.1.0/24"
   availability_zone = "us-east-1a"
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "Bastion_public_subnet"
+  }
  
 
 }
 
-resource "aws_subnet" "main_public_subnet" {
+resource "aws_subnet" "bastion_public_subnet2" {
+  vpc_id            = aws_vpc.bastion_vpc.id 
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "us-east-1b"
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "Bastion_public_subnet2"
+  }
+ 
+
+}
+
+resource "aws_subnet" "main_public_subnet1" {
   vpc_id            = aws_vpc.main_vpc.id 
   cidr_block        = "10.1.1.0/24"
   availability_zone = "us-east-1a"
- 
+ map_public_ip_on_launch = true
+ tags = {
+
+  Name = "main_public_subnet1"
+ }
 
 }
 
-resource "aws_subnet" "main_public_subnet" {
-  vpc_id            = aws_vpc.main_vpc.id 
-  cidr_block        = "10.1.1.0/24"
-  availability_zone = "us-east-1b"
- 
-
-}
-
-resource "aws_subnet" "main_private_subnet" {
+resource "aws_subnet" "main_public_subnet2" {
   vpc_id            = aws_vpc.main_vpc.id 
   cidr_block        = "10.1.2.0/24"
-  availability_zone = "us-east-1a"
- 
+  availability_zone = "us-east-1b"
+ map_public_ip_on_launch = true
+ tags = {
+  Name = "public_subnet2"
+ }
 
 }
 
-resource "aws_subnet" "main_private_subnet" {
+resource "aws_subnet" "main_private_subnet1" {
   vpc_id            = aws_vpc.main_vpc.id 
-  cidr_block        = "10.1.2.0/24" 
-  availability_zone = "us-east-1b "
+  cidr_block        = "10.1.3.0/24"
+  availability_zone = "us-east-1a"
+  tags = {
+    Name = "private_subnet1"
+  }
  
 
 }
 
-
-
-
-resource "aws_route_table_association" "bastion" {
-  subnet_id      = aws_subnet.bastion_public_subnet.id
-  route_table_id = aws_route_table.Bastion_vpc.id
+resource "aws_subnet" "main_private_subnet2" {
+  vpc_id            = aws_vpc.main_vpc.id 
+  cidr_block        = "10.1.4.0/24" 
+  availability_zone = "us-east-1b"
+  tags = {
+    Name = "private_subnet2"
+  }
+ 
 }
 
 
@@ -147,7 +217,6 @@ resource "aws_security_group" "bastion_vpc" {
  name        = "permission for VPC"
   description = "Allow TLS inbound traffic and all outbound traffic"
   vpc_id      = aws_vpc.bastion_vpc.id
-
   ingress {
     from_port        = 22
     to_port          = 22
@@ -220,30 +289,19 @@ resource "aws_security_group" "main_vpc" {
 
 #Elastic IPs
 
-resource "aws_eip" "one" {
+resource "aws_eip" "bastion" {
   domain                    = "vpc"
-  network_interface         = aws_network_interface.main.id
-  depends_on                = [aws_internet_gateway.custom_gw]
+  depends_on                = [aws_internet_gateway.bastion_gw]
 }
 
-resource "aws_eip" "one" {
+resource "aws_eip" "main" {
   domain                    = "vpc"
-  network_interface         = aws_network_interface.main.id
-  depends_on                = [aws_internet_gateway.custom_gw]
+  depends_on                = [aws_internet_gateway.main_gw]
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
+#Keys
 
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
@@ -252,30 +310,46 @@ resource "aws_key_pair" "deployer" {
 
 #Network Interface
 
-resource "aws_network_interface" "main" {
-  subnet_id   = aws_subnet.public_subnet.id
-  # public_ips = ["10.0.1.37"]
-  private_ips     = ["10.0.1.57"]
-  security_groups = [aws_security_group.vpc.id]
+resource "aws_network_interface" "bastion" {
+  subnet_id   = aws_subnet.bastion_public_subnet.id
+  security_groups = [aws_security_group.bastion_vpc.id]
 
   tags = {
-    name = "primary_network_interface"
+    name = "bastion_network_interface"
   }
 }
 
-resource "aws_network_interface" "main" {
-  subnet_id   = aws_subnet.public_subnet.id
-  # public_ips = ["10.0.1.37"]
-  private_ips     = ["10.0.1.57"]
-  security_groups = [aws_security_group.vpc.id]
+resource "aws_network_interface" "main_vpc" {
+  subnet_id   = aws_subnet.main_public_subnet1.id
+  security_groups = [aws_security_group.main_vpc.id]
 
   tags = {
-    name = "primary_network_interface"
+    name = "nginx_network_interface"
   }
 }
+
+resource "aws_network_interface" "main_vpc" {
+  subnet_id   = aws_subnet.main_private_subnet1.id
+  security_groups = [aws_security_group.main_vpc.id]
+
+  tags = {
+    name = "Tomcat_network_interface"
+  }
+}
+
+
+resource "aws_network_interface" "maven" {
+  subnet_id   = aws_subnet.main_private_subnet1.id
+  security_groups = [aws_security_group.main_vpc.id]
+
+  tags = {
+    name = "Maven_network_interface"
+  }
+}
+
 
 #AWS EC2 Instance with user data and instance profile which attaches the IAM role
-resource "aws_instance" "linux" {
+resource "aws_instance" "Bastion" {
   ami           = "ami-080e1f13689e07408"
   instance_type = "t2.micro"
   key_name = "deployer-key"
@@ -283,16 +357,76 @@ resource "aws_instance" "linux" {
   user_data = "${file("install.sh")}" 
 
   network_interface {
-    network_interface_id = aws_network_interface.main.id
+    network_interface_id = aws_network_interface.bastion.id
     device_index         = 0
   }
 
 tags = {
 
-  Name = "Linux"
+  Name = "Bastion"
 }
               
 }
+
+
+resource "aws_instance" "Nginx" {
+  ami           = "ami-080e1f13689e07408"
+  instance_type = "t2.micro"
+  key_name = "deployer-key"
+  iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+  user_data = "${file("install.sh")}" 
+
+  network_interface {
+    network_interface_id = aws_network_interface.main_vpc.id
+    device_index         = 0
+  }
+
+tags = {
+
+  Name = "Nginx"
+}
+              
+}
+
+
+resource "aws_instance" "Tomcat" {
+  ami           = "ami-080e1f13689e07408"
+  instance_type = "t2.micro"
+  key_name = "deployer-key"
+  iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+  user_data = "${file("install.sh")}" 
+
+  network_interface {
+    network_interface_id = aws_network_interface.main_vpc.id
+    device_index         = 0
+  }
+
+tags = {
+
+  Name = "Nginx"
+}
+              
+}
+
+resource "aws_instance" "Maven" {
+  ami           = "ami-0fe630eb857a6ec83"   #Redhat AMI
+  instance_type = "t2.micro"
+  key_name = "deployer-key"
+  iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+  user_data = "${file("maven.sh")}" 
+
+  network_interface {
+    network_interface_id = aws_network_interface.maven.id
+    device_index         = 0
+  }
+
+tags = {
+
+  Name = "Maven"
+}
+              
+}
+
 
 # Systems manager parameter creation -- This will store the custom metrics configuration
 
