@@ -354,10 +354,17 @@ resource "aws_eip" "main" {
 
 #Keys
 
-resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDOljUMVeoE4DnxOiZwyECc19obQsYT0MJideH4U/I8cyvbHMiAx5QC9cavh7ak9DpEwogjKICXCBnljbHLm6/2xOiWkswZbVgUMn9ATbXbZhgestNcoAdY4LJwpF0T8QewYIuC2oHnCc3MHfK9KFjqSF8HDxv7tW6I/550rYChKj423uRBRm9sqbWKAzfvh+qQ1IHefQZ9vw7ilx9LVmW+RLaJLWxVvJhPUssB9DVXXqTVo8TkP8qtkjaKL2swXbbstCO6P1cnzGXbM/Nhmp1J7fiFIgvFjjA3HiiF+BUTEeNIZoyeaaAFcLMxeSevDQ99Dhad0UyJ4q2b7nO/VMefipEJ2MKdF7BBb6mjqSuSviw2UCY4Bu+M9bjZx2JPqEYI4uzsh/zCnEmgGX73WrHf9IOniPXdohiI1KLREsPaYJMoO9PckcipJPR4ZRJJUsCZECVDdpIYwyUkq0gwYLHcbqdBjbbKwF3koiZvWe/myq5eI3AWChmYV3yUYE49D6k= patri@DESKTOP-C1I06IV"
+# resource "aws_key_pair" "deployer" {
+#   key_name   = "deployer-key"
+#   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDOljUMVeoE4DnxOiZwyECc19obQsYT0MJideH4U/I8cyvbHMiAx5QC9cavh7ak9DpEwogjKICXCBnljbHLm6/2xOiWkswZbVgUMn9ATbXbZhgestNcoAdY4LJwpF0T8QewYIuC2oHnCc3MHfK9KFjqSF8HDxv7tW6I/550rYChKj423uRBRm9sqbWKAzfvh+qQ1IHefQZ9vw7ilx9LVmW+RLaJLWxVvJhPUssB9DVXXqTVo8TkP8qtkjaKL2swXbbstCO6P1cnzGXbM/Nhmp1J7fiFIgvFjjA3HiiF+BUTEeNIZoyeaaAFcLMxeSevDQ99Dhad0UyJ4q2b7nO/VMefipEJ2MKdF7BBb6mjqSuSviw2UCY4Bu+M9bjZx2JPqEYI4uzsh/zCnEmgGX73WrHf9IOniPXdohiI1KLREsPaYJMoO9PckcipJPR4ZRJJUsCZECVDdpIYwyUkq0gwYLHcbqdBjbbKwF3koiZvWe/myq5eI3AWChmYV3yUYE49D6k= patri@DESKTOP-C1I06IV"
+# }
+
+resource "aws_key_pair" "maven" {
+  key_name   = "maven"
+  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAKqjC5a3Xy3mGfvDJRqtWTVL/yRtQjzoYwwF97KWe/D patri@DESKTOP-C1I06IV"
 }
+
+
 
 #Network Interface
 
@@ -462,9 +469,9 @@ resource "aws_network_interface" "maven" {
 resource "aws_instance" "Maven" {
   ami           = "ami-0fe630eb857a6ec83"   #Redhat AMI
   instance_type = "t2.micro"
-  #key_name = "deployer-key"
+  key_name = "maven"
   iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
-  #user_data = "${file("maven.sh")}" 
+  user_data = "${file("maven.sh")}" 
 
   network_interface {
     network_interface_id = aws_network_interface.maven.id
