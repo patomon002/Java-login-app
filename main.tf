@@ -354,15 +354,15 @@ resource "aws_eip" "main" {
 
 #Keys
 
-# resource "aws_key_pair" "deployer" {
-#   key_name   = "deployer-key"
-#   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDOljUMVeoE4DnxOiZwyECc19obQsYT0MJideH4U/I8cyvbHMiAx5QC9cavh7ak9DpEwogjKICXCBnljbHLm6/2xOiWkswZbVgUMn9ATbXbZhgestNcoAdY4LJwpF0T8QewYIuC2oHnCc3MHfK9KFjqSF8HDxv7tW6I/550rYChKj423uRBRm9sqbWKAzfvh+qQ1IHefQZ9vw7ilx9LVmW+RLaJLWxVvJhPUssB9DVXXqTVo8TkP8qtkjaKL2swXbbstCO6P1cnzGXbM/Nhmp1J7fiFIgvFjjA3HiiF+BUTEeNIZoyeaaAFcLMxeSevDQ99Dhad0UyJ4q2b7nO/VMefipEJ2MKdF7BBb6mjqSuSviw2UCY4Bu+M9bjZx2JPqEYI4uzsh/zCnEmgGX73WrHf9IOniPXdohiI1KLREsPaYJMoO9PckcipJPR4ZRJJUsCZECVDdpIYwyUkq0gwYLHcbqdBjbbKwF3koiZvWe/myq5eI3AWChmYV3yUYE49D6k= patri@DESKTOP-C1I06IV"
-# }
-
-resource "aws_key_pair" "maven" {
-  key_name   = "maven"
-  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAKqjC5a3Xy3mGfvDJRqtWTVL/yRtQjzoYwwF97KWe/D patri@DESKTOP-C1I06IV"
+resource "aws_key_pair" "deployer" {    #macbook
+  key_name   = "macbook"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtkg8hrJLXyOazDPrVdOqxmzHzSDwcN1oOhbzXWm0ljWAY1FCGzyQX8cbsFJUAPejAaa8LJjov2FIFioh/cOTG1Vdk+M5Sc7lMg+AKJuUvANHpnGICToDpwokcwsZv4EwAISU/zCyVHloDi+4/tDgPwLr485jhCyxjgFjtiXqdrwKv2BvYnN6c0D2TZgkDIqGEFqKse1Y6i+i7QvcDjeN/IBm55ewwDSFtu1roIZBaHjFM1uR8/KjZq9/54M8TZ5b6EI5saik4wHZaKPTU/Y/5ko/8Z3xHyitBqvL8M/p2DN4ySDGeV7TrKrwUfuijHo0eH+9yLgsNQNXvzDIaKFduzIxn9MwOmBKCIf9Jq0xyw5FTt1iMPtTfRCaLAqKco0i6iFHqambU5YERcl8MoTYMsPbHhPvCXh+jmefsUecPSvM6dYkNLoEpamLaSRungQKRozTu+BXFu9rIJj0qCAUvhWDLHPJeGgKLu/PxR3rjL1u4NnlF/Lql79g4IvdxzAE= patrickomorovan@Patricks-MacBook-Pro.local"
 }
+
+# resource "aws_key_pair" "maven" {     #officelaptop
+#   key_name   = "maven"
+#   public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAKqjC5a3Xy3mGfvDJRqtWTVL/yRtQjzoYwwF97KWe/D patri@DESKTOP-C1I06IV"
+# }
 
 
 
@@ -467,10 +467,9 @@ resource "aws_network_interface" "maven" {
 # }
 
 resource "aws_instance" "Maven" {
-  ami           = "ami-0fe630eb857a6ec83"   #Redhat AMI
+  ami           = "ami-0bb7226f8dc0f11ff"   #Redhat AMI
   instance_type = "t2.micro"
-  key_name = "maven"
-  iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+  key_name = "macbook"
   user_data = "${file("maven.sh")}" 
 
   network_interface {
