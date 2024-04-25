@@ -12,25 +12,10 @@
 # sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/alarm/AWS-CWAgentLinConfig -s
 
 # sudo hostnamectl set-hostname maven
+
+sudo dnf update
+
+sudo dnf upgrade -y
  
-cd /opt
+sudo dnf install maven -y
 
-sudo mkdir maven
-
-sudo yum install wget tar gzip tree unzip git-all -y
-
-sudo yum install java-11-openjdk-devel java-1.8.0-openjdk-devel -y
-
-sudo wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
-
-sudo tar xvf apache-maven-3.9.6-bin.tar.gz
-
-sudo rm -rf apache-maven-3.9.6-bin.tar.gz
-
-sudo mv apache-maven-3.9.6 maven
-
-sudo export M2_HOME=/opt/maven/apache-maven-3.9.6
-
-sudo export M2=$M2_HOME/bin
-
-sudo export PATH=$M2:$PATH
