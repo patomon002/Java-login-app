@@ -16,123 +16,123 @@ provider "aws" {
 
 #VPCs Resources
 
-resource "aws_vpc" "bastion_vpc" {
-  cidr_block = "10.0.0.0/16"
-  enable_dns_hostnames = "true"
-  tags = {
-    Name = "Bastion"
-  }
-     
-}
-
-# resource "aws_vpc" "main_vpc" {
-#   cidr_block = "10.1.0.0/16"
+# resource "aws_vpc" "bastion_vpc" {
+#   cidr_block = "10.0.0.0/16"
 #   enable_dns_hostnames = "true"
 #   tags = {
-#     Name = "main"
-#   }  
+#     Name = "Bastion"
+#   }
      
 # }
 
+resource "aws_vpc" "main_vpc" {
+  cidr_block = "10.1.0.0/16"
+  enable_dns_hostnames = "true"
+  tags = {
+    Name = "main"
+  }  
+     
+}
+
 #Internet Gateways
 
-resource "aws_internet_gateway" "bastion_gw" {
-  vpc_id = aws_vpc.bastion_vpc.id
+# resource "aws_internet_gateway" "bastion_gw" {
+#   vpc_id = aws_vpc.bastion_vpc.id
+
+#   tags = {
+#     Name = "main"
+#   }
+# }
+
+resource "aws_internet_gateway" "main_gw" {
+  vpc_id = aws_vpc.main_vpc.id
 
   tags = {
     Name = "main"
   }
 }
 
-# resource "aws_internet_gateway" "main_gw" {
-#   vpc_id = aws_vpc.main_vpc.id
-
-#   tags = {
-#     Name = "main"
-#   }
-# }
-
 #NAT Gateway
 
-# resource "aws_nat_gateway" "main_nat_gw" {
-#   subnet_id     = aws_subnet.main_public_subnet1.id
-#   allocation_id = aws_eip.main.id
-#   tags = {
-#     Name = "gw NAT"
-#   }
+resource "aws_nat_gateway" "main_nat_gw" {
+  subnet_id     = aws_subnet.main_public_subnet1.id
+  allocation_id = aws_eip.main.id
+  tags = {
+    Name = "gw NAT"
+  }
 
-#   depends_on = [aws_internet_gateway.main_gw]
+  depends_on = [aws_internet_gateway.main_gw]
 
-# }
+}
 
 
 #Route Tables 
 
-resource "aws_route_table" "Bastion_vpc" {
-  vpc_id = aws_vpc.bastion_vpc.id
+# resource "aws_route_table" "Bastion_vpc" {
+#   vpc_id = aws_vpc.bastion_vpc.id
+
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.bastion_gw.id
+#   }
+
+#   tags = {
+#     Name = "Bastion route stable"
+#   }
+# }
+
+resource "aws_route_table" "public_subnet" {
+  vpc_id = aws_vpc.main_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.bastion_gw.id
+    gateway_id = aws_internet_gateway.main_gw.id
   }
 
   tags = {
-    Name = "Bastion route stable"
+    Name = "main_vpc_public_subnet"
   }
 }
 
-# resource "aws_route_table" "public_subnet" {
-#   vpc_id = aws_vpc.main_vpc.id
+resource "aws_route_table" "private_subnet" {
+  vpc_id = aws_vpc.main_vpc.id
 
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.main_gw.id
-#   }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.main_nat_gw.id
+  }
 
-#   tags = {
-#     Name = "main_vpc_public_subnet"
-#   }
-# }
-
-# resource "aws_route_table" "private_subnet" {
-#   vpc_id = aws_vpc.main_vpc.id
-
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_nat_gateway.main_nat_gw.id
-#   }
-
-#   tags = {
-#     Name = "main_vpc_private_subnet"
-#   }
-# }
+  tags = {
+    Name = "main_vpc_private_subnet"
+  }
+}
 
 #Route Table Association
 
-resource "aws_route_table_association" "bastion" {
-  subnet_id      = aws_subnet.bastion_public_subnet.id
-  route_table_id = aws_route_table.Bastion_vpc.id
-}
-
-resource "aws_route_table_association" "bastion2" {
-  subnet_id      = aws_subnet.bastion_public_subnet2.id
-  route_table_id = aws_route_table.Bastion_vpc.id
-}
-
-# resource "aws_route_table_association" "public_subnet1" {
-#   subnet_id      = aws_subnet.main_public_subnet1.id
-#   route_table_id = aws_route_table.public_subnet.id
+# resource "aws_route_table_association" "bastion" {
+#   subnet_id      = aws_subnet.bastion_public_subnet.id
+#   route_table_id = aws_route_table.Bastion_vpc.id
 # }
+
+# resource "aws_route_table_association" "bastion2" {
+#   subnet_id      = aws_subnet.bastion_public_subnet2.id
+#   route_table_id = aws_route_table.Bastion_vpc.id
+# }
+
+resource "aws_route_table_association" "public_subnet1" {
+  subnet_id      = aws_subnet.main_public_subnet1.id
+  route_table_id = aws_route_table.public_subnet.id
+}
 
 # resource "aws_route_table_association" "public_subnet2" {
 #   subnet_id      = aws_subnet.main_public_subnet2.id
 #   route_table_id = aws_route_table.public_subnet.id
 # }
 
-# resource "aws_route_table_association" "private_subnet1" {
-#   subnet_id      =  aws_subnet.main_private_subnet1.id
-#   route_table_id = aws_route_table.private_subnet.id
-# }
+resource "aws_route_table_association" "private_subnet1" {
+  subnet_id      =  aws_subnet.main_private_subnet1.id
+  route_table_id = aws_route_table.private_subnet.id
+}
 
 # resource "aws_route_table_association" "private_subnet2" {
 #   subnet_id      = aws_subnet.main_private_subnet2.id
@@ -142,41 +142,41 @@ resource "aws_route_table_association" "bastion2" {
 
 #Subnets
 
-resource "aws_subnet" "bastion_public_subnet" {
-  vpc_id            = aws_vpc.bastion_vpc.id 
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
-  map_public_ip_on_launch = true
-  tags = {
-    Name = "Bastion_public_subnet"
-  }
- 
-
-}
-
-resource "aws_subnet" "bastion_public_subnet2" {
-  vpc_id            = aws_vpc.bastion_vpc.id 
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "us-east-1b"
-  map_public_ip_on_launch = true
-  tags = {
-    Name = "Bastion_public_subnet2"
-  }
- 
-
-}
-
-# resource "aws_subnet" "main_public_subnet1" {
-#   vpc_id            = aws_vpc.main_vpc.id 
-#   cidr_block        = "10.1.1.0/24"
+# resource "aws_subnet" "bastion_public_subnet" {
+#   vpc_id            = aws_vpc.bastion_vpc.id 
+#   cidr_block        = "10.0.1.0/24"
 #   availability_zone = "us-east-1a"
-#  map_public_ip_on_launch = true
-#  tags = {
-
-#   Name = "main_public_subnet1"
-#  }
+#   map_public_ip_on_launch = true
+#   tags = {
+#     Name = "Bastion_public_subnet"
+#   }
+ 
 
 # }
+
+# resource "aws_subnet" "bastion_public_subnet2" {
+#   vpc_id            = aws_vpc.bastion_vpc.id 
+#   cidr_block        = "10.0.2.0/24"
+#   availability_zone = "us-east-1b"
+#   map_public_ip_on_launch = true
+#   tags = {
+#     Name = "Bastion_public_subnet2"
+#   }
+ 
+
+# }
+
+resource "aws_subnet" "main_public_subnet1" {
+  vpc_id            = aws_vpc.main_vpc.id 
+  cidr_block        = "10.1.1.0/24"
+  availability_zone = "us-east-1a"
+ map_public_ip_on_launch = true
+ tags = {
+
+  Name = "main_public_subnet1"
+ }
+
+}
 
 # resource "aws_subnet" "main_public_subnet2" {
 #   vpc_id            = aws_vpc.main_vpc.id 
@@ -189,16 +189,16 @@ resource "aws_subnet" "bastion_public_subnet2" {
 
 # }
 
-# resource "aws_subnet" "main_private_subnet1" {
-#   vpc_id            = aws_vpc.main_vpc.id 
-#   cidr_block        = "10.1.3.0/24"
-#   availability_zone = "us-east-1a"
-#   tags = {
-#     Name = "private_subnet1"
-#   }
+resource "aws_subnet" "main_private_subnet1" {
+  vpc_id            = aws_vpc.main_vpc.id 
+  cidr_block        = "10.1.3.0/24"
+  availability_zone = "us-east-1a"
+  tags = {
+    Name = "private_subnet1"
+  }
  
 
-# }
+}
 
 # resource "aws_subnet" "main_private_subnet2" {
 #   vpc_id            = aws_vpc.main_vpc.id 
@@ -213,77 +213,10 @@ resource "aws_subnet" "bastion_public_subnet2" {
  
 #Security groups
 
-resource "aws_security_group" "bastion_vpc" {
- name        = "permission for VPC"
-  description = "Allow TLS inbound traffic and all outbound traffic"
-  vpc_id      = aws_vpc.bastion_vpc.id
-  ingress {
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port        = 80
-    to_port          = 80 
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-
-  }
-
-   ingress {
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-   }
-
-    ingress {
-    from_port        = 8080
-    to_port          = 8080
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"] 
-    
-  }
-
-   egress {
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-   egress {
-    from_port        = 8080
-    to_port          = 8080
-    protocol         = "UDP"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
- egress {
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-
-}
-
-
-# resource "aws_security_group" "main_vpc" {
+# resource "aws_security_group" "bastion_vpc" {
 #  name        = "permission for VPC"
 #   description = "Allow TLS inbound traffic and all outbound traffic"
-#   vpc_id      = aws_vpc.main_vpc.id
-
+#   vpc_id      = aws_vpc.bastion_vpc.id
 #   ingress {
 #     from_port        = 22
 #     to_port          = 22
@@ -291,7 +224,7 @@ resource "aws_security_group" "bastion_vpc" {
 #     cidr_blocks      = ["0.0.0.0/0"]
 #   }
 
-#    ingress {
+#   ingress {
 #     from_port        = 80
 #     to_port          = 80 
 #     protocol         = "tcp"
@@ -321,7 +254,7 @@ resource "aws_security_group" "bastion_vpc" {
 #     cidr_blocks      = ["0.0.0.0/0"]
 #   }
 
-#     egress {
+#    egress {
 #     from_port        = 8080
 #     to_port          = 8080
 #     protocol         = "UDP"
@@ -346,53 +279,120 @@ resource "aws_security_group" "bastion_vpc" {
 # }
 
 
-#Elastic IPs
+resource "aws_security_group" "main_vpc" {
+ name        = "permission for VPC"
+  description = "Allow TLS inbound traffic and all outbound traffic"
+  vpc_id      = aws_vpc.main_vpc.id
 
-resource "aws_eip" "bastion" {
-  domain                    = "vpc"
-  depends_on                = [aws_internet_gateway.bastion_gw]
+  ingress {
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+   ingress {
+    from_port        = 80
+    to_port          = 80 
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+
+  }
+
+   ingress {
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+   }
+
+    ingress {
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"] 
+    
+  }
+
+   egress {
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+    egress {
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "UDP"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+ egress {
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+
 }
 
-# resource "aws_eip" "main" {
+
+#Elastic IPs
+
+# resource "aws_eip" "bastion" {
 #   domain                    = "vpc"
-#   depends_on                = [aws_internet_gateway.main_gw]
+#   depends_on                = [aws_internet_gateway.bastion_gw]
 # }
+
+resource "aws_eip" "main" {
+  domain                    = "vpc"
+  depends_on                = [aws_internet_gateway.main_gw]
+}
 
 
 
 #Keys
 
-# resource "aws_key_pair" "deployer" {    #macbook
+# resource "aws_key_pair" "macbook" {    #macbook
 #   key_name   = "macbook"
 #   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtkg8hrJLXyOazDPrVdOqxmzHzSDwcN1oOhbzXWm0ljWAY1FCGzyQX8cbsFJUAPejAaa8LJjov2FIFioh/cOTG1Vdk+M5Sc7lMg+AKJuUvANHpnGICToDpwokcwsZv4EwAISU/zCyVHloDi+4/tDgPwLr485jhCyxjgFjtiXqdrwKv2BvYnN6c0D2TZgkDIqGEFqKse1Y6i+i7QvcDjeN/IBm55ewwDSFtu1roIZBaHjFM1uR8/KjZq9/54M8TZ5b6EI5saik4wHZaKPTU/Y/5ko/8Z3xHyitBqvL8M/p2DN4ySDGeV7TrKrwUfuijHo0eH+9yLgsNQNXvzDIaKFduzIxn9MwOmBKCIf9Jq0xyw5FTt1iMPtTfRCaLAqKco0i6iFHqambU5YERcl8MoTYMsPbHhPvCXh+jmefsUecPSvM6dYkNLoEpamLaSRungQKRozTu+BXFu9rIJj0qCAUvhWDLHPJeGgKLu/PxR3rjL1u4NnlF/Lql79g4IvdxzAE= patrickomorovan@Patricks-MacBook-Pro.local"
 # }
 
 resource "aws_key_pair" "office" {     #officelaptop
   key_name   = "office"
-  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAKqjC5a3Xy3mGfvDJRqtWTVL/yRtQjzoYwwF97KWe/D patri@DESKTOP-C1I06IV"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDOljUMVeoE4DnxOiZwyECc19obQsYT0MJideH4U/I8cyvbHMiAx5QC9cavh7ak9DpEwogjKICXCBnljbHLm6/2xOiWkswZbVgUMn9ATbXbZhgestNcoAdY4LJwpF0T8QewYIuC2oHnCc3MHfK9KFjqSF8HDxv7tW6I/550rYChKj423uRBRm9sqbWKAzfvh+qQ1IHefQZ9vw7ilx9LVmW+RLaJLWxVvJhPUssB9DVXXqTVo8TkP8qtkjaKL2swXbbstCO6P1cnzGXbM/Nhmp1J7fiFIgvFjjA3HiiF+BUTEeNIZoyeaaAFcLMxeSevDQ99Dhad0UyJ4q2b7nO/VMefipEJ2MKdF7BBb6mjqSuSviw2UCY4Bu+M9bjZx2JPqEYI4uzsh/zCnEmgGX73WrHf9IOniPXdohiI1KLREsPaYJMoO9PckcipJPR4ZRJJUsCZECVDdpIYwyUkq0gwYLHcbqdBjbbKwF3koiZvWe/myq5eI3AWChmYV3yUYE49D6k= patri@DESKTOP-C1I06IV"
 }
 
 
 
 #Network Interface
 
-resource "aws_network_interface" "bastion" {
-  subnet_id   = aws_subnet.bastion_public_subnet.id
-  security_groups = [aws_security_group.bastion_vpc.id]
+# resource "aws_network_interface" "bastion" {
+#   subnet_id   = aws_subnet.bastion_public_subnet.id
+#   security_groups = [aws_security_group.bastion_vpc.id]
 
-  tags = {
-    name = "bastion_network_interface"
-  }
-}
-
-# resource "aws_network_interface" "main_vpc" {
-#   subnet_id   = aws_subnet.main_private_subnet1.id
-#   security_groups = [aws_security_group.main_vpc.id]
-  
 #   tags = {
-#     name = "nginx_network_interface"
+#     name = "bastion_network_interface"
 #   }
 # }
+
+resource "aws_network_interface" "main_vpc" {
+  subnet_id   = aws_subnet.main_public_subnet1.id
+  security_groups = [aws_security_group.main_vpc.id]
+  
+  tags = {
+    name = "nginx_network_interface"
+  }
+}
 
 # resource "aws_network_interface" "main_vpc" {
 #   subnet_id   = aws_subnet.main_private_subnet1.id
@@ -417,33 +417,33 @@ resource "aws_network_interface" "bastion" {
 
 #AWS EC2 Instance with user data and instance profile which attaches the IAM role
  
-resource "aws_instance" "Bastion" {
-  ami           = "ami-080e1f13689e07408"
-  instance_type = "t2.micro"
-  key_name = "office"
-  iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
-  user_data = "${file("bastion.sh")}" 
+# resource "aws_instance" "Bastion" {
+#   ami           = "ami-080e1f13689e07408"
+#   instance_type = "t2.micro"
+#   key_name = "office"
+#   iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+#   user_data = "${file("bastion.sh")}" 
 
-  network_interface {
-    network_interface_id = aws_network_interface.bastion.id
-    device_index         = 0
-  }
+#   network_interface {
+#     network_interface_id = aws_network_interface.bastion.id
+#     device_index         = 0
+#   }
 
-tags = {
+# tags = {
 
-  Name = "Bastion"
-}
+#   Name = "Bastion"
+# }
               
-}
+# }
 
 
 
 resource "aws_instance" "Nginx" {
   ami           = "ami-080e1f13689e07408"
   instance_type = "t2.micro"
-  key_name = "deployer-key"
+  key_name = "office"
   iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
-  user_data = "${file("install.sh")}" 
+  user_data = "${file("nginx.sh")}" 
 
   network_interface {
     network_interface_id = aws_network_interface.main_vpc.id
