@@ -385,14 +385,14 @@ resource "aws_key_pair" "office" {     #officelaptop
 #   }
 # }
 
-resource "aws_network_interface" "main_vpc" {
-  subnet_id   = aws_subnet.main_public_subnet1.id
-  security_groups = [aws_security_group.main_vpc.id]
+# resource "aws_network_interface" "main_vpc" {
+#   subnet_id   = aws_subnet.main_public_subnet1.id
+#   security_groups = [aws_security_group.main_vpc.id]
   
-  tags = {
-    name = "nginx_network_interface"
-  }
-}
+#   tags = {
+#     name = "nginx_network_interface"
+#   }
+# }
 
 # resource "aws_network_interface" "main_vpc" {
 #   subnet_id   = aws_subnet.main_private_subnet1.id
@@ -413,6 +413,14 @@ resource "aws_network_interface" "main_vpc" {
 #   }
 # }
 
+resource "aws_network_interface" "tomcat" {
+  subnet_id   = aws_subnet.main_public_subnet1.id
+  security_groups = [aws_security_group.main_vpc.id]
+  
+  tags = {
+    name = "tomcat_network_interface"
+  }
+}
 
 
 #AWS EC2 Instance with user data and instance profile which attaches the IAM role
@@ -438,32 +446,12 @@ resource "aws_network_interface" "main_vpc" {
 
 
 
-resource "aws_instance" "Nginx" {
-  ami           = "ami-080e1f13689e07408"
-  instance_type = "t2.micro"
-  key_name = "office"
-  iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
-  user_data = "${file("nginx.sh")}" 
-
-  network_interface {
-    network_interface_id = aws_network_interface.main_vpc.id
-    device_index         = 0
-  }
-
-tags = {
-
-  Name = "Nginx"
-}
-              
-}
-
-
-# resource "aws_instance" "Tomcat" {
+# resource "aws_instance" "Nginx" {
 #   ami           = "ami-080e1f13689e07408"
 #   instance_type = "t2.micro"
-#   key_name = "deployer-key"
+#   key_name = "office"
 #   iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
-#   user_data = "${file("install.sh")}" 
+#   user_data = "${file("nginx.sh")}" 
 
 #   network_interface {
 #     network_interface_id = aws_network_interface.main_vpc.id
@@ -476,6 +464,26 @@ tags = {
 # }
               
 # }
+
+
+resource "aws_instance" "Tomcat" {
+  ami           = "ami-080e1f13689e07408"
+  instance_type = "t2.micro"
+  key_name = "office"
+  iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+  user_data = "${file("tomcat.sh")}" 
+
+  network_interface {
+    network_interface_id = aws_network_interface.tomcat.id
+    device_index         = 0
+  }
+
+tags = {
+
+  Name = "Tomcat"
+}
+              
+}
 
 # resource "aws_instance" "Maven" {
 #   ami           = "ami-0fe630eb857a6ec83"   #Redhat AMI
