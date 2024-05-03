@@ -321,6 +321,29 @@ resource "aws_security_group" "main_vpc" {
     
   }
 
+  ingress {
+    from_port        = 9000
+    to_port          = 9000
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"] 
+    
+  }
+
+    ingress {
+    from_port        = 8082
+    to_port          = 8082
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"] 
+    
+  }
+
+    ingress {
+    from_port        = 8081
+    to_port          = 8081
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"] 
+    
+  }
    egress {
     from_port        = 80
     to_port          = 80
@@ -374,15 +397,15 @@ resource "aws_eip" "main" {
 
 #Keys
 
-# resource "aws_key_pair" "macbook" {    #macbook
-#   key_name   = "macbook"
-#   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtkg8hrJLXyOazDPrVdOqxmzHzSDwcN1oOhbzXWm0ljWAY1FCGzyQX8cbsFJUAPejAaa8LJjov2FIFioh/cOTG1Vdk+M5Sc7lMg+AKJuUvANHpnGICToDpwokcwsZv4EwAISU/zCyVHloDi+4/tDgPwLr485jhCyxjgFjtiXqdrwKv2BvYnN6c0D2TZgkDIqGEFqKse1Y6i+i7QvcDjeN/IBm55ewwDSFtu1roIZBaHjFM1uR8/KjZq9/54M8TZ5b6EI5saik4wHZaKPTU/Y/5ko/8Z3xHyitBqvL8M/p2DN4ySDGeV7TrKrwUfuijHo0eH+9yLgsNQNXvzDIaKFduzIxn9MwOmBKCIf9Jq0xyw5FTt1iMPtTfRCaLAqKco0i6iFHqambU5YERcl8MoTYMsPbHhPvCXh+jmefsUecPSvM6dYkNLoEpamLaSRungQKRozTu+BXFu9rIJj0qCAUvhWDLHPJeGgKLu/PxR3rjL1u4NnlF/Lql79g4IvdxzAE= patrickomorovan@Patricks-MacBook-Pro.local"
-# }
-
-resource "aws_key_pair" "office" {     #officelaptop
-  key_name   = "office"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDOljUMVeoE4DnxOiZwyECc19obQsYT0MJideH4U/I8cyvbHMiAx5QC9cavh7ak9DpEwogjKICXCBnljbHLm6/2xOiWkswZbVgUMn9ATbXbZhgestNcoAdY4LJwpF0T8QewYIuC2oHnCc3MHfK9KFjqSF8HDxv7tW6I/550rYChKj423uRBRm9sqbWKAzfvh+qQ1IHefQZ9vw7ilx9LVmW+RLaJLWxVvJhPUssB9DVXXqTVo8TkP8qtkjaKL2swXbbstCO6P1cnzGXbM/Nhmp1J7fiFIgvFjjA3HiiF+BUTEeNIZoyeaaAFcLMxeSevDQ99Dhad0UyJ4q2b7nO/VMefipEJ2MKdF7BBb6mjqSuSviw2UCY4Bu+M9bjZx2JPqEYI4uzsh/zCnEmgGX73WrHf9IOniPXdohiI1KLREsPaYJMoO9PckcipJPR4ZRJJUsCZECVDdpIYwyUkq0gwYLHcbqdBjbbKwF3koiZvWe/myq5eI3AWChmYV3yUYE49D6k= patri@DESKTOP-C1I06IV"
+resource "aws_key_pair" "macbook" {    #macbook
+  key_name   = "macbook"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtkg8hrJLXyOazDPrVdOqxmzHzSDwcN1oOhbzXWm0ljWAY1FCGzyQX8cbsFJUAPejAaa8LJjov2FIFioh/cOTG1Vdk+M5Sc7lMg+AKJuUvANHpnGICToDpwokcwsZv4EwAISU/zCyVHloDi+4/tDgPwLr485jhCyxjgFjtiXqdrwKv2BvYnN6c0D2TZgkDIqGEFqKse1Y6i+i7QvcDjeN/IBm55ewwDSFtu1roIZBaHjFM1uR8/KjZq9/54M8TZ5b6EI5saik4wHZaKPTU/Y/5ko/8Z3xHyitBqvL8M/p2DN4ySDGeV7TrKrwUfuijHo0eH+9yLgsNQNXvzDIaKFduzIxn9MwOmBKCIf9Jq0xyw5FTt1iMPtTfRCaLAqKco0i6iFHqambU5YERcl8MoTYMsPbHhPvCXh+jmefsUecPSvM6dYkNLoEpamLaSRungQKRozTu+BXFu9rIJj0qCAUvhWDLHPJeGgKLu/PxR3rjL1u4NnlF/Lql79g4IvdxzAE= patrickomorovan@Patricks-MacBook-Pro.local"
 }
+
+# resource "aws_key_pair" "office" {     #officelaptop
+#   key_name   = "office"
+#   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDOljUMVeoE4DnxOiZwyECc19obQsYT0MJideH4U/I8cyvbHMiAx5QC9cavh7ak9DpEwogjKICXCBnljbHLm6/2xOiWkswZbVgUMn9ATbXbZhgestNcoAdY4LJwpF0T8QewYIuC2oHnCc3MHfK9KFjqSF8HDxv7tW6I/550rYChKj423uRBRm9sqbWKAzfvh+qQ1IHefQZ9vw7ilx9LVmW+RLaJLWxVvJhPUssB9DVXXqTVo8TkP8qtkjaKL2swXbbstCO6P1cnzGXbM/Nhmp1J7fiFIgvFjjA3HiiF+BUTEeNIZoyeaaAFcLMxeSevDQ99Dhad0UyJ4q2b7nO/VMefipEJ2MKdF7BBb6mjqSuSviw2UCY4Bu+M9bjZx2JPqEYI4uzsh/zCnEmgGX73WrHf9IOniPXdohiI1KLREsPaYJMoO9PckcipJPR4ZRJJUsCZECVDdpIYwyUkq0gwYLHcbqdBjbbKwF3koiZvWe/myq5eI3AWChmYV3yUYE49D6k= patri@DESKTOP-C1I06IV"
+# }
 
 
 
@@ -425,15 +448,23 @@ resource "aws_key_pair" "office" {     #officelaptop
 #   }
 # }
 
-resource "aws_network_interface" "tomcat" {
+# resource "aws_network_interface" "tomcat" {
+#   subnet_id   = aws_subnet.main_public_subnet1.id
+#   security_groups = [aws_security_group.main_vpc.id]
+  
+#   tags = {
+#     name = "tomcat_network_interface"
+#   }
+# }
+
+resource "aws_network_interface" "docker" {
   subnet_id   = aws_subnet.main_public_subnet1.id
   security_groups = [aws_security_group.main_vpc.id]
   
   tags = {
-    name = "tomcat_network_interface"
+    name = "docker_network_interface"
   }
 }
-
 
 #AWS EC2 Instance with user data and instance profile which attaches the IAM role
  
@@ -478,21 +509,40 @@ resource "aws_network_interface" "tomcat" {
 # }
 
 
-resource "aws_instance" "Tomcat" {
+# resource "aws_instance" "Tomcat" {
+#   ami           = "ami-080e1f13689e07408"
+#   instance_type = "t2.micro"
+#   key_name = "office"
+#   iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+#   user_data = "${file("tomcat.sh")}" 
+
+#   network_interface {
+#     network_interface_id = aws_network_interface.tomcat.id
+#     device_index         = 0
+#   }
+
+# tags = {
+
+#   Name = "Tomcat"
+# }
+              
+# }
+
+resource "aws_instance" "Docker" {
   ami           = "ami-080e1f13689e07408"
   instance_type = "t2.micro"
-  key_name = "office"
+  key_name = "macbook"
   iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
-  user_data = "${file("tomcat.sh")}" 
+  user_data = "${file("docker.sh")}" 
 
   network_interface {
-    network_interface_id = aws_network_interface.tomcat.id
+    network_interface_id = aws_network_interface.docker.id
     device_index         = 0
   }
 
 tags = {
 
-  Name = "Tomcat"
+  Name = "Docker"
 }
               
 }

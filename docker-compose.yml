@@ -1,0 +1,40 @@
+
+services:
+  ubuntu_tomcat:
+    image: ubuntu
+    container_name: ubuntu_tomcat
+    command: tail -f /dev/null
+    networks:
+      - my_network
+    ports:
+      - "8443:8443"  # Map host port 8080 to container port 8080
+
+  ubuntu_jenkins:
+    image: ubuntu
+    container_name: ubuntu_jenkins
+    command: tail -f /dev/null
+    networks:
+      - my_network
+    ports:
+      - "8081:8081"  # Map host port 8081 to container port 8081
+
+  ubuntu_sonarqube:
+    image: ubuntu
+    container_name: ubuntu_sonarqube
+    command: tail -f /dev/null
+    networks:
+      - my_network
+    ports:
+      - "9000:9000"  # Map host port 9000 to container port 9000
+
+  ubuntu_nexus:
+    image: ubuntu
+    container_name: ubuntu_nexus
+    command: tail -f /dev/null
+    networks:
+      - my_network
+    ports:
+      - "8082:8082"  # Map host port 8082 to container port 8082
+
+networks:
+  my_network:
