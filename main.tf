@@ -54,16 +54,16 @@ resource "aws_internet_gateway" "main_gw" {
 
 #NAT Gateway
 
-resource "aws_nat_gateway" "main_nat_gw" {
-  subnet_id     = aws_subnet.main_public_subnet1.id
-  allocation_id = aws_eip.main.id
-  tags = {
-    Name = "gw NAT"
-  }
+# resource "aws_nat_gateway" "main_nat_gw" {
+#   subnet_id     = aws_subnet.main_public_subnet1.id
+#   allocation_id = aws_eip.main.id
+#   tags = {
+#     Name = "gw NAT"
+#   }
 
-  depends_on = [aws_internet_gateway.main_gw]
+#   depends_on = [aws_internet_gateway.main_gw]
 
-}
+# }
 
 
 #Route Tables 
@@ -94,18 +94,18 @@ resource "aws_route_table" "public_subnet" {
   }
 }
 
-resource "aws_route_table" "private_subnet" {
-  vpc_id = aws_vpc.main_vpc.id
+# resource "aws_route_table" "private_subnet" {
+#   vpc_id = aws_vpc.main_vpc.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.main_nat_gw.id
-  }
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_nat_gateway.main_nat_gw.id
+#   }
 
-  tags = {
-    Name = "main_vpc_private_subnet"
-  }
-}
+#   tags = {
+#     Name = "main_vpc_private_subnet"
+#   }
+# }
 
 #Route Table Association
 
@@ -129,10 +129,10 @@ resource "aws_route_table_association" "public_subnet1" {
 #   route_table_id = aws_route_table.public_subnet.id
 # }
 
-resource "aws_route_table_association" "private_subnet1" {
-  subnet_id      =  aws_subnet.main_private_subnet1.id
-  route_table_id = aws_route_table.private_subnet.id
-}
+# resource "aws_route_table_association" "private_subnet1" {
+#   subnet_id      =  aws_subnet.main_private_subnet1.id
+#   route_table_id = aws_route_table.private_subnet.id
+# }
 
 # resource "aws_route_table_association" "private_subnet2" {
 #   subnet_id      = aws_subnet.main_private_subnet2.id
@@ -189,16 +189,16 @@ resource "aws_subnet" "main_public_subnet1" {
 
 # }
 
-resource "aws_subnet" "main_private_subnet1" {
-  vpc_id            = aws_vpc.main_vpc.id 
-  cidr_block        = "10.1.3.0/24"
-  availability_zone = "us-east-1a"
-  tags = {
-    Name = "private_subnet1"
-  }
+# resource "aws_subnet" "main_private_subnet1" {
+#   vpc_id            = aws_vpc.main_vpc.id 
+#   cidr_block        = "10.1.3.0/24"
+#   availability_zone = "us-east-1a"
+#   tags = {
+#     Name = "private_subnet1"
+#   }
  
 
-}
+# }
 
 # resource "aws_subnet" "main_private_subnet2" {
 #   vpc_id            = aws_vpc.main_vpc.id 
@@ -354,7 +354,7 @@ resource "aws_security_group" "main_vpc" {
     egress {
     from_port        = 8080
     to_port          = 8080
-    protocol         = "UDP"
+    protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
 
@@ -388,10 +388,10 @@ resource "aws_security_group" "main_vpc" {
 #   depends_on                = [aws_internet_gateway.bastion_gw]
 # }
 
-resource "aws_eip" "main" {
-  domain                    = "vpc"
-  depends_on                = [aws_internet_gateway.main_gw]
-}
+# resource "aws_eip" "main" {
+#   domain                    = "vpc"
+#   depends_on                = [aws_internet_gateway.main_gw]
+# }
 
 
 
@@ -457,14 +457,24 @@ resource "aws_key_pair" "macbook" {    #macbook
 #   }
 # }
 
-resource "aws_network_interface" "docker" {
+resource "aws_network_interface" "jenkins" {
   subnet_id   = aws_subnet.main_public_subnet1.id
   security_groups = [aws_security_group.main_vpc.id]
   
   tags = {
-    name = "docker_network_interface"
+    name = "jenkins_network_interface"
   }
 }
+
+# resource "aws_network_interface" "docker" {
+#   subnet_id   = aws_subnet.main_public_subnet1.id
+#   security_groups = [aws_security_group.main_vpc.id]
+  
+#   tags = {
+#     name = "docker_network_interface"
+#   }
+# }
+
 
 #AWS EC2 Instance with user data and instance profile which attaches the IAM role
  
@@ -528,21 +538,40 @@ resource "aws_network_interface" "docker" {
               
 # }
 
-resource "aws_instance" "Docker" {
+# resource "aws_instance" "Docker" {
+#   ami           = "ami-080e1f13689e07408"
+#   instance_type = "t2.micro"
+#   key_name = "macbook"
+#   #iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+#   user_data = "${file("docker.sh")}" 
+
+#   network_interface {
+#     network_interface_id = aws_network_interface.docker.id
+#     device_index         = 0
+#   }
+
+# tags = {
+
+#   Name = "Docker"
+# }
+              
+# }
+
+resource "aws_instance" "Jenkins" {
   ami           = "ami-080e1f13689e07408"
   instance_type = "t2.micro"
   key_name = "macbook"
-  iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
-  user_data = "${file("docker.sh")}" 
+  #iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+  user_data = "${file("jenkins.sh")}" 
 
   network_interface {
-    network_interface_id = aws_network_interface.docker.id
+    network_interface_id = aws_network_interface.jenkins.id
     device_index         = 0
   }
 
 tags = {
 
-  Name = "Docker"
+  Name = "Jenkins"
 }
               
 }
@@ -570,10 +599,10 @@ tags = {
 
 # Systems manager parameter creation -- This will store the custom metrics configuration
 
-resource "aws_ssm_parameter" "secret" {
-  name        = "/alarm/AWS-CWAgentLinConfig"
-  description = "Custom Metrics"
-  type        = "String"
-  value       = "${file("SSM_Parameter.json")}"
+# resource "aws_ssm_parameter" "secret" {
+#   name        = "/alarm/AWS-CWAgentLinConfig"
+#   description = "Custom Metrics"
+#   type        = "String"
+#   value       = "${file("SSM_Parameter.json")}"
 
-}
+# }

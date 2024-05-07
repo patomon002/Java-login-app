@@ -42,40 +42,40 @@
 #create IAM role
 
 
-data "aws_iam_policy_document" "instance_assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
+# data "aws_iam_policy_document" "instance_assume_role_policy" {
+#   statement {
+#     actions = ["sts:AssumeRole"]
 
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
+#     principals {
+#       type        = "Service"
+#       identifiers = ["ec2.amazonaws.com"]
+#     }
+#   }
+# }
 
-resource "aws_iam_role" "ec2_role" {
-  name = "ec2_role"
-  path = "/"
-  assume_role_policy = data.aws_iam_policy_document.instance_assume_role_policy.json
-}
-
-
-resource "aws_iam_role_policy" "CW_policy" {
-  name = "CW_policy"
-  role = "${aws_iam_role.ec2_role.id}"
-  policy = "${file("cloudwatch_policy.json")}"
-
-}
-resource "aws_iam_role_policy" "SSM_policy" {
-  name = "SSM_policy"
-  role = "${aws_iam_role.ec2_role.id}"
-  policy = "${file("SSM_policy.json")}"
-
-}
+# resource "aws_iam_role" "ec2_role" {
+#   name = "ec2_role"
+#   path = "/"
+#   assume_role_policy = data.aws_iam_policy_document.instance_assume_role_policy.json
+# }
 
 
-resource "aws_iam_instance_profile" "EC2_profile" {
-  name = "EC2_profile"
-  role =   "${aws_iam_role.ec2_role.id}"
-}
+# resource "aws_iam_role_policy" "CW_policy" {
+#   name = "CW_policy"
+#   role = "${aws_iam_role.ec2_role.id}"
+#   policy = "${file("cloudwatch_policy.json")}"
+
+# }
+# resource "aws_iam_role_policy" "SSM_policy" {
+#   name = "SSM_policy"
+#   role = "${aws_iam_role.ec2_role.id}"
+#   policy = "${file("SSM_policy.json")}"
+
+# }
+
+
+# resource "aws_iam_instance_profile" "EC2_profile" {
+#   name = "EC2_profile"
+#   role =   "${aws_iam_role.ec2_role.id}"
+# }
 
