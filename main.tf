@@ -25,14 +25,14 @@ provider "aws" {
      
 # }
 
-resource "aws_vpc" "main_vpc" {
-  cidr_block = "10.1.0.0/16"
-  enable_dns_hostnames = "true"
-  tags = {
-    Name = "main"
-  }  
+# resource "aws_vpc" "main_vpc" {
+#   cidr_block = "10.1.0.0/16"
+#   enable_dns_hostnames = "true"
+#   tags = {
+#     Name = "main"
+#   }  
      
-}
+# }
 
 #Internet Gateways
 
@@ -44,13 +44,13 @@ resource "aws_vpc" "main_vpc" {
 #   }
 # }
 
-resource "aws_internet_gateway" "main_gw" {
-  vpc_id = aws_vpc.main_vpc.id
+# resource "aws_internet_gateway" "main_gw" {
+#   vpc_id = aws_vpc.main_vpc.id
 
-  tags = {
-    Name = "main"
-  }
-}
+#   tags = {
+#     Name = "main"
+#   }
+# }
 
 #NAT Gateway
 
@@ -81,18 +81,18 @@ resource "aws_internet_gateway" "main_gw" {
 #   }
 # }
 
-resource "aws_route_table" "public_subnet" {
-  vpc_id = aws_vpc.main_vpc.id
+# resource "aws_route_table" "public_subnet" {
+#   vpc_id = aws_vpc.main_vpc.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main_gw.id
-  }
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.main_gw.id
+#   }
 
-  tags = {
-    Name = "main_vpc_public_subnet"
-  }
-}
+#   tags = {
+#     Name = "main_vpc_public_subnet"
+#   }
+# }
 
 # resource "aws_route_table" "private_subnet" {
 #   vpc_id = aws_vpc.main_vpc.id
@@ -119,10 +119,10 @@ resource "aws_route_table" "public_subnet" {
 #   route_table_id = aws_route_table.Bastion_vpc.id
 # }
 
-resource "aws_route_table_association" "public_subnet1" {
-  subnet_id      = aws_subnet.main_public_subnet1.id
-  route_table_id = aws_route_table.public_subnet.id
-}
+# resource "aws_route_table_association" "public_subnet1" {
+#   subnet_id      = aws_subnet.main_public_subnet1.id
+#   route_table_id = aws_route_table.public_subnet.id
+# }
 
 # resource "aws_route_table_association" "public_subnet2" {
 #   subnet_id      = aws_subnet.main_public_subnet2.id
@@ -166,17 +166,17 @@ resource "aws_route_table_association" "public_subnet1" {
 
 # }
 
-resource "aws_subnet" "main_public_subnet1" {
-  vpc_id            = aws_vpc.main_vpc.id 
-  cidr_block        = "10.1.1.0/24"
-  availability_zone = "us-east-1a"
- map_public_ip_on_launch = true
- tags = {
+# resource "aws_subnet" "main_public_subnet1" {
+#   vpc_id            = aws_vpc.main_vpc.id 
+#   cidr_block        = "10.1.1.0/24"
+#   availability_zone = "us-east-1a"
+#  map_public_ip_on_launch = true
+#  tags = {
 
-  Name = "main_public_subnet1"
- }
+#   Name = "main_public_subnet1"
+#  }
 
-}
+# }
 
 # resource "aws_subnet" "main_public_subnet2" {
 #   vpc_id            = aws_vpc.main_vpc.id 
@@ -279,106 +279,130 @@ resource "aws_subnet" "main_public_subnet1" {
 # }
 
 
-resource "aws_security_group" "main_vpc" {
- name        = "permission for VPC"
-  description = "Allow TLS inbound traffic and all outbound traffic"
-  vpc_id      = aws_vpc.main_vpc.id
+# resource "aws_security_group" "main_vpc" {
+#  name        = "permission for VPC"
+#   description = "Allow TLS inbound traffic and all outbound traffic"
+#   vpc_id      = aws_vpc.main_vpc.id
 
-  ingress {
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+#   ingress {
+#     from_port        = 22
+#     to_port          = 22
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#   }
 
-  ingress {
-    from_port        = 8443
-    to_port          = 8443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+#   ingress {
+#     from_port        = 8443
+#     to_port          = 8443
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#   }
 
-   ingress {
-    from_port        = 80
-    to_port          = 80 
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+#    ingress {
+#     from_port        = 80
+#     to_port          = 80 
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
 
-  }
+#   }
 
-   ingress {
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-   }
+#    ingress {
+#     from_port        = 443
+#     to_port          = 443
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#    }
 
-    ingress {
-    from_port        = 8080
-    to_port          = 8080
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"] 
+#     ingress {
+#     from_port        = 8080
+#     to_port          = 8080
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"] 
     
-  }
+#   }
 
-  ingress {
-    from_port        = 9000
-    to_port          = 9000
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"] 
+#   ingress {
+#     from_port        = 9000
+#     to_port          = 9000
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"] 
     
-  }
+#   }
 
-    ingress {
-    from_port        = 8082
-    to_port          = 8082
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"] 
+#     ingress {
+#     from_port        = 8082
+#     to_port          = 8082
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"] 
     
-  }
+#   }
 
-    ingress {
-    from_port        = 8081
-    to_port          = 8081
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"] 
+#     ingress {
+#     from_port        = 8081
+#     to_port          = 8081
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
     
-  }
-   egress {
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+#   }
 
-    egress {
-    from_port        = 8080
-    to_port          = 8080
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+#     ingress {
+#     from_port        = 2375
+#     to_port          = 2375
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+    
+#   }
 
- egress {
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+#    egress {
+#     from_port        = 80
+#     to_port          = 80
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#   }
 
-  egress {
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
+#     egress {
+#     from_port        = 8080
+#     to_port          = 8080
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#   }
 
- egress {
-    from_port        = 8443
-    to_port          = 8443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-}
+#  egress {
+#     from_port        = 443
+#     to_port          = 443
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#   }
+
+#   egress {
+#     from_port        = 22
+#     to_port          = 22
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#   }
+
+#  egress {
+#     from_port        = 8443
+#     to_port          = 8443
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#   }
+
+#   egress {
+#     from_port        = 9000
+#     to_port          = 9000
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#   }
+
+#     egress {
+#     from_port        = 2375
+#     to_port          = 2375
+#     protocol         = "tcp"
+#     cidr_blocks      = ["0.0.0.0/0"]
+    
+#   }
+# }
 
 
 #Elastic IPs
@@ -393,14 +417,19 @@ resource "aws_security_group" "main_vpc" {
 #   depends_on                = [aws_internet_gateway.main_gw]
 # }
 
+# resource "aws_eip" "tomcat" {
+#   domain                    = "vpc"
+#   network_interface = aws_network_interface.tomcat.id
+# }
+
 
 
 #Keys
 
-resource "aws_key_pair" "macbook" {    #macbook
-  key_name   = "macbook"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtkg8hrJLXyOazDPrVdOqxmzHzSDwcN1oOhbzXWm0ljWAY1FCGzyQX8cbsFJUAPejAaa8LJjov2FIFioh/cOTG1Vdk+M5Sc7lMg+AKJuUvANHpnGICToDpwokcwsZv4EwAISU/zCyVHloDi+4/tDgPwLr485jhCyxjgFjtiXqdrwKv2BvYnN6c0D2TZgkDIqGEFqKse1Y6i+i7QvcDjeN/IBm55ewwDSFtu1roIZBaHjFM1uR8/KjZq9/54M8TZ5b6EI5saik4wHZaKPTU/Y/5ko/8Z3xHyitBqvL8M/p2DN4ySDGeV7TrKrwUfuijHo0eH+9yLgsNQNXvzDIaKFduzIxn9MwOmBKCIf9Jq0xyw5FTt1iMPtTfRCaLAqKco0i6iFHqambU5YERcl8MoTYMsPbHhPvCXh+jmefsUecPSvM6dYkNLoEpamLaSRungQKRozTu+BXFu9rIJj0qCAUvhWDLHPJeGgKLu/PxR3rjL1u4NnlF/Lql79g4IvdxzAE= patrickomorovan@Patricks-MacBook-Pro.local"
-}
+# resource "aws_key_pair" "macbook" {    #macbook
+#   key_name   = "macbook"
+#   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtkg8hrJLXyOazDPrVdOqxmzHzSDwcN1oOhbzXWm0ljWAY1FCGzyQX8cbsFJUAPejAaa8LJjov2FIFioh/cOTG1Vdk+M5Sc7lMg+AKJuUvANHpnGICToDpwokcwsZv4EwAISU/zCyVHloDi+4/tDgPwLr485jhCyxjgFjtiXqdrwKv2BvYnN6c0D2TZgkDIqGEFqKse1Y6i+i7QvcDjeN/IBm55ewwDSFtu1roIZBaHjFM1uR8/KjZq9/54M8TZ5b6EI5saik4wHZaKPTU/Y/5ko/8Z3xHyitBqvL8M/p2DN4ySDGeV7TrKrwUfuijHo0eH+9yLgsNQNXvzDIaKFduzIxn9MwOmBKCIf9Jq0xyw5FTt1iMPtTfRCaLAqKco0i6iFHqambU5YERcl8MoTYMsPbHhPvCXh+jmefsUecPSvM6dYkNLoEpamLaSRungQKRozTu+BXFu9rIJj0qCAUvhWDLHPJeGgKLu/PxR3rjL1u4NnlF/Lql79g4IvdxzAE= patrickomorovan@Patricks-MacBook-Pro.local"
+# }
 
 # resource "aws_key_pair" "office" {     #officelaptop
 #   key_name   = "office"
@@ -457,14 +486,14 @@ resource "aws_key_pair" "macbook" {    #macbook
 #   }
 # }
 
-resource "aws_network_interface" "jenkins" {
-  subnet_id   = aws_subnet.main_public_subnet1.id
-  security_groups = [aws_security_group.main_vpc.id]
+# resource "aws_network_interface" "jenkins" {
+#   subnet_id   = aws_subnet.main_public_subnet1.id
+#   security_groups = [aws_security_group.main_vpc.id]
   
-  tags = {
-    name = "jenkins_network_interface"
-  }
-}
+#   tags = {
+#     name = "jenkins_network_interface"
+#   }
+# }
 
 # resource "aws_network_interface" "docker" {
 #   subnet_id   = aws_subnet.main_public_subnet1.id
@@ -502,8 +531,8 @@ resource "aws_network_interface" "jenkins" {
 # resource "aws_instance" "Nginx" {
 #   ami           = "ami-080e1f13689e07408"
 #   instance_type = "t2.micro"
-#   key_name = "office"
-#   iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+#   key_name = "macbook"
+#   # iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
 #   user_data = "${file("nginx.sh")}" 
 
 #   network_interface {
@@ -522,8 +551,8 @@ resource "aws_network_interface" "jenkins" {
 # resource "aws_instance" "Tomcat" {
 #   ami           = "ami-080e1f13689e07408"
 #   instance_type = "t2.micro"
-#   key_name = "office"
-#   iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+#   key_name = "macbook"
+#   # iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
 #   user_data = "${file("tomcat.sh")}" 
 
 #   network_interface {
@@ -557,24 +586,24 @@ resource "aws_network_interface" "jenkins" {
               
 # }
 
-resource "aws_instance" "Jenkins" {
-  ami           = "ami-080e1f13689e07408"
-  instance_type = "t2.micro"
-  key_name = "macbook"
-  #iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
-  user_data = "${file("jenkins.sh")}" 
+# resource "aws_instance" "Jenkins" {
+#   ami           = "ami-080e1f13689e07408"
+#   instance_type = "t2.micro"
+#   key_name = "macbook"
+#   #iam_instance_profile = "${aws_iam_instance_profile.EC2_profile.name}"
+#   user_data = "${file("jenkins.sh")}" 
 
-  network_interface {
-    network_interface_id = aws_network_interface.jenkins.id
-    device_index         = 0
-  }
+#   network_interface {
+#     network_interface_id = aws_network_interface.jenkins.id
+#     device_index         = 0
+#   }
 
-tags = {
+# tags = {
 
-  Name = "Jenkins"
-}
+#   Name = "Jenkins"
+# }
               
-}
+# }
 
 # resource "aws_instance" "Maven" {
 #   ami           = "ami-0fe630eb857a6ec83"   #Redhat AMI
@@ -594,6 +623,18 @@ tags = {
               
 # }
 
+
+resource "aws_db_instance" "default" {
+  allocated_storage    = 10
+  db_name              = "mydb"
+  engine               = "mysql"
+  engine_version       = "8.0"
+  instance_class       = "db.t3.micro"
+  username             = "test"
+  password             = "test"
+  parameter_group_name = "default.mysql8.0"
+  skip_final_snapshot  = true
+}
 
 
 

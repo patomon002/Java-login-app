@@ -81,14 +81,21 @@
 
 #OR
 
-temp = int(input("Enter the temperature outside\n"))
-if temp > 13:
-    print("The temperature is okay")
-    print ("Enjoy the weather")
-elif temp < 13:
-    print("Its too cold out there")
+# temp = int(input("Enter the temperature outside\n"))
+# if temp > 13:
+#     print("The temperature is okay")
+#     print ("Enjoy the weather")
+# elif temp < 13:
+#     print("Its too cold out there")
 
     
 # If a statement is false, the indented print statement is not run, instead , the print statement after the indented statement will run, in the above 
 #above senario, the statement is false as temp is not less than 94, hence the first and second print statement will not run
 
+# Rock Paper Scissors using imported ModuleNotFoundError
+
+import random
+
+dice = random.randint(1,6)
+
+print("the temp outisde is" + " " + str(dice))
