@@ -92,10 +92,74 @@
 # If a statement is false, the indented print statement is not run, instead , the print statement after the indented statement will run, in the above 
 #above senario, the statement is false as temp is not less than 94, hence the first and second print statement will not run
 
-# Rock Paper Scissors using imported ModuleNotFoundError
+# Rock Paper Scissors using imported Module
 
-import random
+# import random
 
-dice = random.randint(1,6)
+# dice = random.randint(1,6)
 
-print("the temp outisde is" + " " + str(dice))
+# print("the temp outisde is" + " " + str(dice))
+
+#This is using the formation (f) to include a integer in the print output which is a string
+
+# print(f"hello, my number is {25}")
+
+
+#Creating a function help to store a variable or output
+#The below defines a function with a variable number, instead of repeating the print output for different figures, the function declared after the print function takes precedence
+#This reduce code duplication
+
+
+# hour = 60
+
+# day = 24
+
+# def myfun(number):
+
+#     print(f"{number} days have {number * day} hours")
+
+# myfun(20)
+# myfun(40)
+
+
+# #OR
+
+
+# hour = 60
+
+# day = 24
+
+# def myfun():
+
+#     print(f"days have {day * day} hours")
+
+# myfun()
+# myfun() #These two function lines means the output will be printed twice
+
+
+#OR
+
+
+hour = 60
+
+day = 24
+
+def myfun(number, patrick):
+
+    print(f"{number} days have {number * day} hours {patrick}")
+
+myfun(20, 50)
+
+
+def myfunc2(hello, choices):
+
+      print(f"your name is {hello}")
+
+myfunc2(20, 30)
+
+
+
+
+
+
+

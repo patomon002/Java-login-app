@@ -34,7 +34,6 @@ sudo mkdir /opt/tomcat
 
 cd /opt/tomcat
 
-
 sudo tar xzvf apache-tomcat-9.0.89.tar.gz -C /opt/tomcat --strip-components=1
 
 sudo chgrp -R tomcat /opt/tomcat

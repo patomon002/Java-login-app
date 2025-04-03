@@ -1,0 +1,11 @@
+kubectl get node
+kubectl get pod
+kubectl apply -f <deployment file yaml>
+kubectl describe pod <pod name>
+kubectl logs <pod name>
+kubectl delete deployments --all -n default
+kubectl delete pod <pod name>
+kubectl rollout restart deployment <deployment name> #This can be found in the deployment yaml file
+kubectl get service <name of the service> to see the nodeport that is exposed
+kubectl get nodes -o wide   to get node IP address
+
