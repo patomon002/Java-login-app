@@ -1,0 +1,73 @@
+pipeline{
+
+agent any
+
+tools{
+maven 'maven'
+
+}
+
+stages{
+
+  stage('CheckOutCode'){
+    steps{
+    git branch: 'master', credentialsId: '2cbcfdb2-76fd-4252-ba8b-e76fe3ea131c', url: 'https://github.com/patomon002/maven-web-application.git'
+	
+	}
+  }
+  
+  stage('Clean'){
+  steps{
+  sh  "mvn clean"
+  }
+  }
+  
+
+ stage('ExecuteSonarQubeReport'){
+  steps{
+  sh  "mvn sonar:sonar"
+  }
+  }
+  
+  stage('PackageArtifact'){
+  steps{
+  sh  "mvn package"
+  }
+  }
+  
+  stage('DeployArtifact'){
+  steps{
+  sh  "mvn deploy"
+  }
+  }
+  
+  stage('DeployAppIntoTomcat'){
+  steps{
+   sh "scp -o StrictHostKeyChecking=no target/*.war ubuntu@52.7.213.150:/opt/tomcat/webapps/"    
+  }
+  }
+  
+ 
+}
+
+//Stages Closing
+
+post{
+
+ success{
+ emailext to: 'patomon002@yahoo.com',
+          subject: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
+          body: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
+          replyTo: 'patomon002@yahoo.com'
+ }
+ 
+ failure{
+ emailext to: 'patomon002@yahoo.com',
+          subject: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
+          body: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
+          replyTo: 'patomon002@yahoo.com'
+ }
+ 
+}
+
+}
