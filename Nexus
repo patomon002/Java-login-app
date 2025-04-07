@@ -1,0 +1,53 @@
+sudo apt install openjdk-17-jdk -y
+
+cd /opt
+
+sudo wget https://download.sonatype.com/nexus/3/nexus-unix-x86-64-3.79.0-09.tar.gz
+
+sudo tar -xvzf latest-unix.tar.gz
+
+sudo mv /opt/nexus-3.73.0-12 /opt/nexus
+
+sudo adduser nexus
+
+sudo vi /etc/sudoers
+
+add the below line to the sudoers file
+nexus ALL=(ALL) NOPASSWD: ALL
+
+sudo nano /opt/nexus/bin/nexus.rc
+
+Add the below line
+run_as_user="nexus"
+
+sudo nano /opt/nexus/bin/nexus.vmoptions
+
+add the below
+-XX:MaxDirectMemorySize=2703m
+-Djava.net.preferIPv4Stack=true
+
+sudo nano /etc/systemd/system/nexus.service
+
+add the below
+
+[Unit]
+Description=nexus service
+After=network.target
+
+[Service]
+Type=forking
+LimitNOFILE=65536
+ExecStart=/opt/nexus/bin/nexus start
+ExecStop=/opt/nexus/bin/nexus stop
+User=nexus
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+
+
+sudo systemctl start nexus
+
+sudo systemctl enable nexus
+
+sudo systemctl status nexus
