@@ -1,0 +1,66 @@
+pipeline{
+  agent { label 'Node1' } #specify the node here. Since this deployment is to docker, the node should have docker installed as well.
+  tools{
+    maven 'Maven'
+  }
+  stages{
+    stage('GitClone'){
+      steps{
+        echo "cloning the lastest applications version"
+        git "https://github.com/patomon002/maven-web-application.git"
+      }
+    }
+      stage('Test+Build'){
+      steps{
+        sh "echo Running unitTesting"
+        sh "mvn clean package"
+        echo "echo test successful and backupArtifacts created"
+      }
+    }
+      stage('codeQuality'){
+      steps{
+        sh "echo Running detail code analysis"
+        sh "mvn sonar:sonar"
+        sh  "echo All conditions met/passed"
+      }
+    }
+      stage('upLoadArtifacts'){
+      steps{
+        sh "echo Running detail code analysis"
+        sh "mvn deploy"
+        sh "echo backupArtifacts in nexus"
+      }
+    }
+
+#For this stage, make sure that docker plugin is installed in Jenkins
+       stage('predeployment') {
+  steps {
+    script {
+      docker.withServer('unix:///var/run/docker.sock') {
+        sh 'echo Creating Docker image'
+        sh 'docker build -t patomon002/maven-web-app .'
+        sh 'docker push patomon002/maven-web-app'
+      }
+    }
+  }
+}
+    stage('UnDeploy'){
+      steps{
+        sh "echo UNDEPLOYING existing application"
+        sh "docker rm -f webapp"
+      }
+    }
+    stage('deployment'){
+      steps{
+        sh "echo application ready for deployment"
+        sh "docker run -d -p 8000:8080 --name webapp patomon002/maven-web-app"
+      }
+    }
+  stage('emailNotification'){
+    steps{
+      sh "echo deployment successful"
+    }
+  }
+
+  }
+}
